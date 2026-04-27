@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  REPORTER
+  EDITOR
+}
+
+enum LocationType {
+  PHYSICAL
+  REMOTE
+}
+
+enum JobStatus {
+  NEW
+  ASSIGNED
+  TRANSCRIBED
+  REVIEWED
+  COMPLETED
+}
+
+model City {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  users      User[]
+  jobs       Job[]
+
+  @@map("cities")
+}
+
+model User {
+  id           BigInt   @id @default(autoincrement())
+  name         String
+  role         Role
+  city_id      BigInt
+  availability Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  city           City  @relation(fields: [city_id], references: [id])
+  jobsAsReporter Job[] @relation("ReporterJobs")
+  jobsAsEditor   Job[] @relation("EditorJobs")
+
+  @@map("users")
+}
+
+model Job {
+  id            BigInt       @id @default(autoincrement())
+  case_name     String
+  duration      Int
+  location_type LocationType
+  city_id       BigInt?
+  status        JobStatus    @default(NEW)
+  reporter_id   BigInt?
+  editor_id     BigInt?
+  reporter_rate Decimal?     @db.Decimal(18, 2)
+  editor_fee    Decimal?     @db.Decimal(18, 2)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  city     City? @relation(fields: [city_id], references: [id])
+  reporter User? @relation("ReporterJobs", fields: [reporter_id], references: [id])
+  editor   User? @relation("EditorJobs", fields: [editor_id], references: [id])
+
+  @@map("jobs")
+}
+
+model GlobalFee {
+  id            BigInt   @id @default(autoincrement())
+  reporter_rate Decimal  @db.Decimal(18, 2)
+  editor_fee    Decimal  @db.Decimal(18, 2)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("global_fee")
+}
