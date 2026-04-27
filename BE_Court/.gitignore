@@ -17,3 +17,5 @@ Thumbs.db
 *.njsproj
 *.sln
 *.tsbuildinfo
+
+/src/generated/prisma
