@@ -45,6 +45,8 @@ model City {
 
 model User {
   id           BigInt   @id @default(autoincrement())
+  username     String   @unique
+  password     String
   name         String
   role         Role
   city_id      BigInt

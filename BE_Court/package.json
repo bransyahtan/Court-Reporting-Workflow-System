@@ -4,7 +4,7 @@
   "description": "Court Reporting Workflow System - Backend",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
@@ -13,14 +13,19 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "nodemon": "^3.1.14",
     "prisma": "^6.19.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
